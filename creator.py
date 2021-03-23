@@ -1,4 +1,6 @@
-import ast,os,random,string
+import ast,os,random,string,math
+
+import matplotlib.pyplot as plt
 
 matrix_file='matrices.txt'
 
@@ -269,6 +271,47 @@ class matrix_manip: #matrix manipulator
     #=========================================================================
     #=========================================================================
     
+    def test_rot(self,layer,dire):
+        # self.get_matrix_dimensions(matr)
+        if dire=='clock_wise':
+            def get_next_position(dex,msize):
+                
+                lower=msize-1
+                slope=dex*lower
+                part1=(((msize**2)-(msize-2))+lower)*(dex//msize)
+                part2=lower-part1
+                fin=lower+part2
+                return fin
+                
+        elif dire=='clock_counter':
+            def get_next_position(dex,msize):
+                yint=((msize**2)-msize) 
+                subtraction1=dex*(msize+1) 
+                
+                primary=yint-subtraction1 
+                secondary=((msize**2)+1)*(dex//msize) 
+                
+                fin=primary+secondary
+                return fin
+            
+            
+        first_list=self.get_list(layer)
+        final_list=[None for x in range(len(first_list))]
+        
+        # for i in range(len(first_list)):
+        #     n1=get_next_position(i,int(math.sqrt(len(first_list))))
+        #     n2=get_next_position(i*-1,int(math.sqrt(len(first_list))))
+            
+        
+        for i in range(len(first_list)):
+            next=i+get_next_position(i,int(math.sqrt(len(first_list))))
+            final_list.pop(next)
+            final_list.insert(next,first_list[i])
+        
+        fin_mat=self.turn_list(final_list)
+        return fin_mat
+        
+    
     #=========================================================================
     #=========================================================================
     #=========================================================================
@@ -326,17 +369,17 @@ class matrix_manip: #matrix manipulator
 
 
         if direction=='left':
-            rot_left(og)
+            return rot_left(og)
         elif direction=='right':
-            rot_right(og)
+            return rot_right(og)
         elif direction=='front':
-            rot_front(og)
+            return rot_front(og)
         elif direction=='back':
-            rot_back(og)
+            return rot_back(og)
         elif direction=='clock_wise':
-            rot_clock_wise(og)
+            return rot_clock_wise(og)
         elif direction=='clock_counter':
-            rot_clock_counter(og)
+            return rot_clock_counter(og)
         else:
             print('that is not an option')
 
@@ -573,6 +616,72 @@ class matrix_manip: #matrix manipulator
         return fin_chans
     #=========================================================================
     #=========================================================================
+    #=========================================================================
+    
+    #=========================================================================
+    #=========================================================================
+    #=========================================================================
+    def get_difference(self,matrix_list1,matrix_list2):
+        m1=matrix_list1
+        m2=matrix_list2
+        
+        dif_list=[]
+        
+        for i in range(len(m1)):
+            item1=m1[i]
+            for m in range(len(m2)):
+                item2=m2[m]
+                
+                
+                if item1==item2:
+                    dif_list.append(m-i)
+                    
+        return dif_list
+    
+    #=========================================================================
+    #=========================================================================
+    #=========================================================================
+    
+    
+    
+    #=========================================================================
+    #=========================================================================
+    #=========================================================================
+    def get_list(self,layer):
+        final_list=[]
+        
+        for i in layer:
+            for k in i:
+                final_list.append(k)
+        
+        return final_list
+        
+    #=========================================================================
+    #=========================================================================
+    #========================================================================= 
+    
+    
+    #=========================================================================
+    #=========================================================================
+    #========================================================================= 
+    def turn_list(self,lis):
+        dim=int(math.sqrt(len(lis)))
+        net=[]
+        start=0
+        end=dim
+        
+        for i in range(dim):
+            section=lis[start:end]
+            net.append(section)
+            start+=dim
+            end+=dim
+        
+        return net
+        
+        
+        
+    #=========================================================================
+    #=========================================================================
     #========================================================================= 
 
     #=========================================================================
@@ -583,6 +692,7 @@ class matrix_manip: #matrix manipulator
        
     def get_face(self,face,matr):
         work_matrix=matr 
+
         if face=='front':
             return work_matrix[0]
 
@@ -687,25 +797,20 @@ class matrix:
     #=========================================================================
     #=========================================================================
     def replace_matrix(self,new_matrix):
-        height=0
-        width=0
-        length=0
-        
-        print(len(new_matrix))
-        for i in new_matrix:
-            height+=1
-            
-            #for k in i:
-            #    width+=1
-            #    for j in k:
-            #        length+=1
-            
-                    
-        
-        
+        self.matrix_final=new_matrix
     #=========================================================================
     #=========================================================================
     #=========================================================================
+    
+    
+    #=========================================================================
+    #=========================================================================
+    #=========================================================================
+    
+    #=========================================================================
+    #=========================================================================
+    #=========================================================================
+    
 
 
 
@@ -1132,8 +1237,8 @@ class matrix_connector(MIH):
     def __init__(self):
         MIH.__init__(self)
         #print(self.get_current_matrices())
-        names=self.get_current_matrices()
-        info=self.get_matrix_info(names[0])
+        # names=self.get_current_matrices()
+        # info=self.get_matrix_info(names[0])
     
     def connect_matrices(self,m1_name,m2_name,m1_face,con_mode,m2_face=None,con_dir=None,dimen=None):
             #con_mode='connection_mode'
@@ -1225,44 +1330,160 @@ class matrix_connector(MIH):
 #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
+    
+
+    
+    
+    
+def main2():
+    
+    msize=4
+    length=msize
+    width=msize
+    height=msize
+    
+    display=matrix_display()
+    changer=matrix_manip()
+    
+    
+    
+    
+    cube_one=matrix(length,width,height)
+    slice1=changer.get_face('front',cube_one.matrix_final)
+    cube_one.replace_matrix(changer.rotate('clock_wise',cube_one.matrix_final))
+    slice2=changer.get_face('front',cube_one.matrix_final)
+    
+    list1=changer.get_list(slice1)
+    list2=changer.get_list(slice2)
+    
+    # holder=[]
+    # dif=changer.get_difference(list1,list2)
+    print(list1)
+    print(list2)
+    dif2=changer.get_difference(list2,list1)
+    # print(dif)
+    print(dif2)
+    # for i in range(msize**2):
+    #     # print(i)
+    #     holder.append(get_next_position(i,msize))
+    
+    
+    # print(holder)
+    # nmat1=changer.test_rot(slice1,'clock_wise')
+    # display.display_layer(slice1)
+    # display.display_layer(nmat1)
+    # print(list1)
+    # print(list2)
+    # print(changer.get_difference(list1,list2))
+    
+    
+    
+    
+    
+    
+    
+    
+main2()
 #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++=======================TEST SECTION
 #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-length=3
-width=3
-height=3
-total=length*width*height
-test_info=[]
+def main():
+    
+    
+    
+    
+    
+        
+    fig=plt.figure()
 
-for i in range(total):
-    test_info.append(i)
+    max=5
+    square=(max-1)**2
 
+    for i in range(3,max):
+        fixed=i
 
-
-
-handler=MIH()
-mdisplay=matrix_display()
-manip=matrix_manip()
-connect=matrix_connector()
-
-cube_one=matrix(length,width,height)
-cube_two=matrix(length,width,height)
-
-
-c1_mat=manip.store_info(test_info,cube_one.get_matrix())[0]
-c2_mat=manip.store_info(test_info,cube_two.get_matrix())[0]
+        length=fixed
+        width=fixed
+        height=fixed
+        total=length*width*height
+        test_info=[]
 
 
-handler.matrices_format()
-handler.add_new_matrix(c2_mat,manip.get_all_channels(c2_mat))
-handler.add_new_matrix(c1_mat,manip.get_all_channels(c1_mat))
+        # for i in range(total):
+        #     test_info.append(i)
 
 
-names=handler.get_current_matrices()
 
-connect.connect_matrices(names[0],names[1],'top','full',m2_face='bottom')
+
+        handler=MIH()
+        mdisplay=matrix_display()
+        manip=matrix_manip()
+        connect=matrix_connector()
+
+        cube_one=matrix(length,width,height)
+
+        slice=manip.get_face('front',cube_one.matrix_final)
+        cube_one.replace_matrix(manip.rotate('clock_wise',cube_one.matrix_final))
+        slice2=manip.get_face('front',cube_one.matrix_final)
+        
+
+        s1list=manip.get_list(slice)
+        s2list=manip.get_list(slice2)
+        
+        # plt.ylim(())
+        
+        x=list(range(len(s1list)))
+        d=manip.get_difference(s1list,s2list)
+        d2=manip.get_difference(s2list,s1list)
+        dif=[0]
+        dif2=[0]
+        
+        for i in range(len(d)-1):
+            current=d[i]
+            next=d[i+1]
+            d1=next-current
+            dif.append(d1)
+            dif2.append(d1)
+        
+        # print(s1list)
+        print(fixed,dif)
+        print(fixed,dif2)
+        # print(s2list)
+        
+        # plt.scatter(x,d)
+        # plt.scatter(x,d2)
+
+    # plt.xlim(0,square)
+    # plt.ylim(square*-1,square)
+    # plt.show()
+        
+        
+
+
+
+    # handler.matrices_format()
+
+
+
+
+
+
+
+
+        
+
+
+
+
+
+    #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+
 
 
 
@@ -1270,14 +1491,35 @@ connect.connect_matrices(names[0],names[1],'top','full',m2_face='bottom')
 
 
 
-#cube2=matrix(length,width,height)
-#cube.write_info()
-#print(cube.get_matrices_info())
 
-#+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-#+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-#+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-#+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
