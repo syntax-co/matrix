@@ -1,5 +1,5 @@
 import math
-
+from MatrixDisplay import matrix_display
 #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -359,12 +359,10 @@ class matrix_manip: #matrix manipulator
             post_lay=self.turn_list(post_list)
             return post_lay
                 
-            
-        dire="Front"
         
         if dire=='clock-wise':
+            
             for i in range(len(w_matrix)):
-                
                 l_dim=len(w_matrix)
                 prelayer=w_matrix[i]
                 postlayer=rotate_layer(prelayer,'clock_wise',l_dim)
@@ -413,7 +411,7 @@ class matrix_manip: #matrix manipulator
             
         if dire=='Back':
             sliced=self.get_slices(w_matrix,'left')
-        
+            
             for i in range(len(sliced)):
                 l_dim=len(sliced)
                 prelayer=sliced[i]
@@ -750,8 +748,8 @@ class matrix_manip: #matrix manipulator
             for m in range(len(m2)):
                 item2=m2[m]
                 
-                
                 if item1==item2:
+                    
                     dif_list.append(m-i)
                     
         return dif_list
